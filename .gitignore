@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# pytest / coberturas
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Saidas geradas (CSV, PNG, relatorios) — manter a pasta, ignorar o conteudo
+resultados/*
+!resultados/.gitkeep
+
+# Sistema operacional / editores
+.DS_Store
+.vscode/
+.idea/
