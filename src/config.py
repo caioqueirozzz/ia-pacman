@@ -4,6 +4,49 @@ from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
+class PaletaNeon:
+    """Paleta arcade neon — unica fonte de verdade para cores da GUI pygame."""
+    # Fundos
+    fundo:        tuple = (10,  10,  20)   # #0A0A14
+    fundo_grid:   tuple = (16,  16,  30)   # #10101E
+
+    # Paredes
+    parede_fill:  tuple = (13,  18,  64)   # #0D1240
+    parede_borda: tuple = (46,  75, 255)   # #2E4BFF neon blue
+
+    # Corredor
+    corredor:     tuple = (10,  10,  20)   # #0A0A14
+    pellet:       tuple = (245, 215, 161)  # #F5D7A1
+
+    # Exploracao
+    fechado:      tuple = (31,  184, 154)  # #1FB89A (alpha ~70 aplicado em codigo)
+    fronteira:    tuple = (79,  227, 255)  # #4FE3FF
+
+    # Rotas
+    rota_astar:   tuple = (255, 212,   0)  # #FFD400 amarelo
+    rota_bfs:     tuple = (255,  79, 216)  # #FF4FD8 magenta
+
+    # Risco
+    risco:        tuple = (255,  59,  59)  # #FF3B3B (alpha 0-140)
+
+    # Terrenos
+    lento:        tuple = (107,  74,  43)  # #6B4A2B
+    risco_fixo:   tuple = (255, 138,  31)  # #FF8A1F
+
+    # Texto
+    texto:        tuple = (232, 232, 240)  # #E8E8F0
+    texto_sec:    tuple = (138, 138, 163)  # #8A8AA3
+
+    # Elementos fixos
+    inicio:       tuple = (255, 212,   0)  # amarelo
+    objetivo:     tuple = (80,  220,  60)  # verde
+    fantasma:     tuple = (220,  60, 220)  # magenta
+
+
+NEON = PaletaNeon()
+
+
+@dataclass(frozen=True)
 class Config:
     # Custos base por tipo de celula
     custo_corredor: float = 1.0

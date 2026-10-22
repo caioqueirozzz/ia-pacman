@@ -13,23 +13,11 @@ diferentes por célula** e comparamos a **Busca de Custo Uniforme (UCS)** com o
 ```bash
 pip install -r requirements.txt
 
-# Comparar algoritmos num mapa
-python main.py --mapa mapas/atalho_perigoso.txt --algoritmos bfs,ucs,astar --lambda 5 --raio 4
 
 # Abrir a visualizacao pygame
 python main.py --mapa mapas/arcade.txt --gui
 
-# Mapa aleatorio reprodutivel
-python main.py --aleatorio 41 --seed 7 --algoritmos ucs,astar
 
-# Experimentos
-python -m experimentos.e1_eficiencia
-python -m experimentos.e2_curto_vs_seguro
-python -m experimentos.e3_heuristicas
-python -m experimentos.gerar_relatorio
-
-# Testes
-pytest
 ```
 
 ---
