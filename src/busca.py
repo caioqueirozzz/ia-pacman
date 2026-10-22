@@ -33,6 +33,9 @@ class ResultadoBusca:
     dist_min_fantasma: int | None
     ordem_expansao: list[tuple[int, int]]
     fronteira_por_passo: list[set] | None = None
+    # passo_geracao_dict[pos] = indice de expansao em que pos foi inserido na fila
+    # Permite reconstruir a fronteira em qualquer passo sem guardar copias
+    passo_geracao_dict: dict = field(default_factory=dict)
 
 
 def _reconstruir_caminho(
@@ -78,6 +81,8 @@ def busca_melhor_primeiro(
     fronteira_atual = {inicio}
     fronteira_maxima = 1
     ordem_expansao: list[tuple[int, int]] = []
+    # passo_geracao_dict[pos] = nos_expandidos no momento em que pos foi inserido na fila
+    passo_geracao_dict: dict[tuple[int, int], int] = {inicio: 0}
 
     t0 = time.perf_counter()
 
@@ -116,6 +121,7 @@ def busca_melhor_primeiro(
                 exposicao_risco=exp,
                 dist_min_fantasma=dist_fan,
                 ordem_expansao=ordem_expansao,
+                passo_geracao_dict=passo_geracao_dict,
             )
 
         g_atual = melhor_g[pos]
@@ -130,6 +136,8 @@ def busca_melhor_primeiro(
                 heapq.heappush(heap, (prio_nova, desempate_novo, contador, viz))
                 fronteira_atual.add(viz)
                 nos_gerados += 1
+                if viz not in passo_geracao_dict:
+                    passo_geracao_dict[viz] = nos_expandidos
 
     tempo_ms = (time.perf_counter() - t0) * 1000.0
     return ResultadoBusca(
@@ -137,6 +145,7 @@ def busca_melhor_primeiro(
         encontrado=False,
         caminho=[],
         custo_total=float("inf"),
+        passo_geracao_dict=passo_geracao_dict,
         passos=0,
         nos_expandidos=nos_expandidos,
         nos_gerados=nos_gerados,
