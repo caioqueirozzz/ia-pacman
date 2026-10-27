@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 
 # Abrir a visualizacao pygame
-python main.py --mapa mapas/arcade.txt --gui
+python3 main.py --mapa mapas/arcade.txt --gui
 
 
 ```

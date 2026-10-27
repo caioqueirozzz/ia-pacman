@@ -510,8 +510,13 @@ class EstadoGUI:
                 if pg < passo and p not in exp}
 
     def proximo_passo(self) -> None:
-        lim = max(len(self.res_ucs.ordem_expansao),
-                  len(self.res_astar.ordem_expansao))
+        if self.modo == self.MODO_ROTAS:
+            lim_bfs   = len(self.res_bfs.caminho)   - 1 if self.res_bfs.encontrado   else 0
+            lim_astar = len(self.res_astar.caminho) - 1 if self.res_astar.encontrado else 0
+            lim = max(lim_bfs, lim_astar, 1)
+        else:
+            lim = max(len(self.res_ucs.ordem_expansao),
+                      len(self.res_astar.ordem_expansao))
         if self.passo < lim:
             self.passo += 1
 
@@ -523,12 +528,18 @@ class EstadoGUI:
     def alternar_modo(self) -> None:
         self.modo = 1 - self.modo
         self.reiniciar()
+        if self.modo == self.MODO_ROTAS:
+            self.rodando = True
 
     def trocar_lambda(self, delta: float) -> None:
         self.lambda_risco = max(0.0, self.lambda_risco + delta)
         modo = self.modo
+        estava_rodando = self.rodando
         self._recarregar(self.lab)
         self.modo = modo
+        # No modo rotas, reanima automaticamente ao mudar lambda
+        if self.modo == self.MODO_ROTAS:
+            self.rodando = True
 
     def ajustar_vel(self, delta: int) -> None:
         self.fps_anim = max(1, min(60, self.fps_anim + delta))
@@ -588,13 +599,14 @@ def _painel_exploracao(surf, estado: EstadoGUI, res, t_ag: float,
 
 
 def _painel_rotas(surf, estado: EstadoGUI, tc: int, ox: int, oy: int) -> None:
-    lab = estado.lab
+    lab   = estado.lab
+    passo = estado.passo
     _layer_base(surf, lab, set(), tc, ox, oy)
     _layer_risco(surf, lab, estado.campo_risco, estado.lambda_risco, tc, ox, oy)
     if estado.res_bfs.encontrado:
-        _layer_rota(surf, estado.res_bfs.caminho,   NEON.rota_bfs,   True,  tc, ox, oy)
+        _layer_rota(surf, estado.res_bfs.caminho[:passo + 1],   NEON.rota_bfs,   True,  tc, ox, oy)
     if estado.res_astar.encontrado:
-        _layer_rota(surf, estado.res_astar.caminho, NEON.rota_astar, False, tc, ox, oy)
+        _layer_rota(surf, estado.res_astar.caminho[:passo + 1], NEON.rota_astar, False, tc, ox, oy)
     _layer_top(surf, lab, tc, ox, oy)
 
 
@@ -744,11 +756,15 @@ def iniciar_gui(
 
             # Cards BFS e A* lado a lado no topo
             w2 = (larg_pan - MARGIN) // 2
+            lim_bfs_r   = len(estado.res_bfs.caminho)   - 1 if estado.res_bfs.encontrado   else 0
+            lim_astar_r = len(estado.res_astar.caminho) - 1 if estado.res_astar.encontrado else 0
+            conc_bfs   = estado.passo >= lim_bfs_r
+            conc_astar = estado.passo >= lim_astar_r
             _card(screen, fontes, estado.res_bfs, "BFS", "f = passos",
-                  ox, y_card, w2, estado.res_bfs.nos_expandidos, True)
+                  ox, y_card, w2, estado.passo, conc_bfs)
             _card(screen, fontes, estado.res_astar, "A*",  "f = g + h",
                   ox + w2 + MARGIN, y_card, w2,
-                  estado.res_astar.nos_expandidos, True)
+                  estado.passo, conc_astar)
             _barra_comparacao(screen, fontes, estado.res_ucs, estado.res_astar,
                                MARGIN, y_barra, LW - 2 * MARGIN)
 
